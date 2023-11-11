@@ -1,0 +1,113 @@
+{
+  "version": "5",
+  "dialect": "sqlite",
+  "id": "0dda79b2-2baf-4240-bead-7b951454fbbb",
+  "prevId": "da0e75cd-91f9-4088-bceb-5a524585e416",
+  "tables": {
+    "connection_types": {
+      "name": "connection_types",
+      "columns": {
+        "connection_type_id": {
+          "name": "connection_type_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "connection_type_name": {
+          "name": "connection_type_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "connection_types_uq_connection_type_name": {
+          "name": "connection_types_uq_connection_type_name",
+          "columns": [
+            "connection_type_name"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "connections": {
+      "name": "connections",
+      "columns": {
+        "connection_id": {
+          "name": "connection_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "connection_type_id": {
+          "name": "connection_type_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "connection_name": {
+          "name": "connection_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "connections_uq_connection_name": {
+          "name": "connections_uq_connection_name",
+          "columns": [
+            "connection_name"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "connections_connection_type_id_connection_types_connection_type_id_fk": {
+          "name": "connections_connection_type_id_connection_types_connection_type_id_fk",
+          "tableFrom": "connections",
+          "tableTo": "connection_types",
+          "columnsFrom": [
+            "connection_type_id"
+          ],
+          "columnsTo": [
+            "connection_type_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "dual": {
+      "name": "dual",
+      "columns": {
+        "dummy": {
+          "name": "dummy",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  }
+}
