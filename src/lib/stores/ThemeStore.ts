@@ -2,6 +2,7 @@ import { atom } from "jotai";
 import { OH_THEME_APPEARANCE, OH_THEME_COLOR } from "../GlobalConstants";
 import { ThemeAppearance } from "../enums/ThemeAppearanceEnum";
 import { ThemeColor, themeColorList } from "../enums/ThemeColorEnum";
+import { AwaitHelper } from "../helpers/AwaitHelper";
 import { IsHelper } from "../helpers/IsHelper";
 import { SetCookieQuery } from "../queries/cookies/SetCookieQuery.ts";
 
@@ -21,7 +22,7 @@ export const themeColorState = atom(
       }
 
       set(themeColor, newThemeColor);
-      await SetCookieQuery({ themeColor: newThemeColor });
+      await AwaitHelper.execute(SetCookieQuery({ themeColor: newThemeColor }));
 
       if (typeof window === "undefined") {
          return;
@@ -45,7 +46,7 @@ export const themeAppearanceState = atom(
       }
 
       set(themeAppearance, newThemeAppearance);
-      await SetCookieQuery({ themeAppearance: newThemeAppearance });
+      await AwaitHelper.execute(SetCookieQuery({ themeAppearance: newThemeAppearance }));
 
       if (typeof window === "undefined") {
          return;

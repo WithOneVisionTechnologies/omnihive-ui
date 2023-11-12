@@ -5,9 +5,9 @@ import { MenuTab } from "@/lib/enums/MenuTabEnum";
 import { ThemeAppearance, themeAppearanceList } from "@/lib/enums/ThemeAppearanceEnum";
 import { ThemeColor, themeColorList } from "@/lib/enums/ThemeColorEnum";
 import { ArrayHelper } from "@/lib/helpers/ArrayHelper";
-import { ImageHelper } from "@/lib/helpers/ImageHelper";
 import { IsHelper } from "@/lib/helpers/IsHelper";
 import { StringHelper } from "@/lib/helpers/StringHelper";
+import { MediaService } from "@/lib/services/MediaService";
 import { activeHeaderTabState } from "@/lib/stores/AppStore";
 import {
    currentPathState,
@@ -38,6 +38,7 @@ export const MainHeader = () => {
    const searchParams = useSearchParams();
    const router = useRouter();
    const { isSignedIn } = useAuth();
+   const mediaService = new MediaService();
 
    const [activeHeaderTab, setActiveHeaderTab] = useAtom(activeHeaderTabState);
    const [displayAdminTabs] = useAtom(displayAdminTabsState);
@@ -103,7 +104,7 @@ export const MainHeader = () => {
          <a href="/" className="flex items-center">
             <div className="h-10 w-10">
                <Image
-                  src={`${ImageHelper.getCloudinaryRoot(CloudinaryFolders.ApplicationLogos, 40)}/bee_${themeColor}_${
+                  src={`${mediaService.getCloudinaryRoot(CloudinaryFolders.ApplicationLogos, 40)}/bee_${themeColor}_${
                      themeIsDark ? "dark" : "light"
                   }.png`}
                   alt="logo"

@@ -1,8 +1,10 @@
-import { EncryptionHelper } from "@/lib/helpers/EncryptionHelper";
+import { AwaitHelper } from "@/lib/helpers/AwaitHelper";
+import { EncryptionService } from "@/lib/services/EncryptionService";
 
 export async function POST(request: Request) {
-   const text = await request.text();
-   const decryptedText = EncryptionHelper.symmetricDecrypt(text);
+   const encryptionService = new EncryptionService();
+   const text = await AwaitHelper.execute(request.text());
+   const decryptedText = encryptionService.symmetricDecrypt(text);
 
    return new Response(decryptedText);
 }

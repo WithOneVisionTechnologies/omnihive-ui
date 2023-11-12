@@ -5,11 +5,11 @@ import {
    OH_CRYPTO_RANDOM_CHARACTER_COUNT,
    cryptoCipherList,
 } from "../GlobalConstants";
-import { IsHelper } from "./IsHelper";
+import { IsHelper } from "../helpers/IsHelper";
 
-export class EncryptionHelper {
-   public static symmetricEncrypt = (text: string): string => {
-      const cryptoEnvironment = EncryptionHelper.getCryptoEnvironment();
+export class EncryptionService {
+   public symmetricEncrypt = (text: string): string => {
+      const cryptoEnvironment = this.getCryptoEnvironment();
 
       const iv = crypto.randomBytes(cryptoEnvironment.ivLength);
       const cipher = crypto.createCipheriv(cryptoEnvironment.cipher, Buffer.from(cryptoEnvironment.key), iv);
@@ -18,15 +18,15 @@ export class EncryptionHelper {
       encrypted = Buffer.concat([encrypted, cipher.final()]);
 
       let final = `${iv.toString("hex")}:${encrypted.toString("hex")}`;
-      final = EncryptionHelper.addProtection(final, cryptoEnvironment.randomCharacterCount);
+      final = this.addProtection(final, cryptoEnvironment.randomCharacterCount);
 
       return final;
    };
 
-   public static symmetricDecrypt(text: string): string {
-      const cryptoEnvironment = EncryptionHelper.getCryptoEnvironment();
+   public symmetricDecrypt(text: string): string {
+      const cryptoEnvironment = this.getCryptoEnvironment();
 
-      text = EncryptionHelper.removeProtection(text, cryptoEnvironment.randomCharacterCount);
+      text = this.removeProtection(text, cryptoEnvironment.randomCharacterCount);
 
       const [ivHex, encryptedHex] = text.split(":");
       const iv = Buffer.from(ivHex, "hex");
@@ -42,7 +42,7 @@ export class EncryptionHelper {
       return final;
    }
 
-   private static getCryptoEnvironment = (): {
+   private getCryptoEnvironment = (): {
       cipher: string;
       ivLength: number;
       key: string;
@@ -116,7 +116,7 @@ export class EncryptionHelper {
       return returnObject;
    };
 
-   private static generateRandomCharacters = (randomCharacterCount: number): string => {
+   private generateRandomCharacters = (randomCharacterCount: number): string => {
       const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
       let result = "";
@@ -128,7 +128,7 @@ export class EncryptionHelper {
       return result;
    };
 
-   private static addProtection = (message: string, randomCharacterCount: number) => {
+   private addProtection = (message: string, randomCharacterCount: number) => {
       const protectNumber = IsHelper.isPositiveInteger(randomCharacterCount)
          ? randomCharacterCount
          : Number.parseInt(process.env["NEXT_PUBLIC_ENCRYPTION_PROTECT"] ?? "0");
@@ -141,7 +141,7 @@ export class EncryptionHelper {
       )}${this.generateRandomCharacters(protectNumber)}`;
    };
 
-   private static removeProtection = (message: string, randomCharacterCount: number) => {
+   private removeProtection = (message: string, randomCharacterCount: number) => {
       const protectNumber = IsHelper.isPositiveInteger(randomCharacterCount)
          ? randomCharacterCount
          : Number.parseInt(process.env["NEXT_PUBLIC_ENCRYPTION_PROTECT"] ?? "0");

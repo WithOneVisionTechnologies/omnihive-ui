@@ -5,10 +5,11 @@ import {
    OH_THEME_COLOR,
    cookieOptions,
 } from "@/lib/GlobalConstants";
-import { ConfigHelper } from "@/lib/helpers/ConfigHelper";
 import { IsHelper } from "@/lib/helpers/IsHelper";
+import { ConfigService } from "@/lib/services/ConfigService";
 import { authMiddleware, redirectToSignIn } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
+import { AwaitHelper } from "./lib/helpers/AwaitHelper";
 import { CookieModel } from "./lib/models/CookieModel";
 import { EncryptQuery } from "./lib/queries/crypto/EncryptQuery";
 
@@ -39,7 +40,7 @@ export default authMiddleware({
             browserPrefersDark: OH_THEME_BROWSER_PREFERS_DARK,
          };
 
-         const encryptedCookie = await EncryptQuery(JSON.stringify(newCookie));
+         const encryptedCookie = await AwaitHelper.execute(EncryptQuery(JSON.stringify(newCookie)));
 
          response.cookies.set({
             ...cookieOptions,
@@ -48,10 +49,20 @@ export default authMiddleware({
          });
       }
 
-      /* Environment Variable Management */
-      const { envVariablesStatus } = ConfigHelper.buildEnvVariables();
+      /* Config Check */
+      const configService = new ConfigService();
+
+      /* Environment Variable Check */
+      const { envVariablesStatus } = configService.buildEnvVariables();
 
       if (envVariablesStatus === "error" && !url.pathname.startsWith("/status")) {
+         return NextResponse.redirect(new URL("/status", req.url));
+      }
+
+      /* Config DB Check */
+      const configDbStatus = await configService.checkConfigDatabaseConnection();
+
+      if (configDbStatus === false && !url.pathname.startsWith("/status")) {
          return NextResponse.redirect(new URL("/status", req.url));
       }
 

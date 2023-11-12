@@ -1,3 +1,4 @@
+import { AwaitHelper } from "@/lib/helpers/AwaitHelper";
 import { createClient } from "@libsql/client";
 import "dotenv/config";
 import { drizzle } from "drizzle-orm/libsql";
@@ -12,9 +13,11 @@ export const db = drizzle(client);
 
 async function main() {
    try {
-      await migrate(db, {
-         migrationsFolder: "./migrations",
-      });
+      await AwaitHelper.execute(
+         migrate(db, {
+            migrationsFolder: "./migrations",
+         }),
+      );
       console.log("Tables migrated!");
       process.exit(0);
    } catch (error) {

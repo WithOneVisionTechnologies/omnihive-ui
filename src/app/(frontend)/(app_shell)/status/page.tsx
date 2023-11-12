@@ -3,11 +3,14 @@ import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { EnvironmentVariableStatus } from "@/lib/enums/EnvironmentVariableStatusEnum";
-import { ConfigHelper } from "@/lib/helpers/ConfigHelper";
+import { AwaitHelper } from "@/lib/helpers/AwaitHelper";
+import { ConfigService } from "@/lib/services/ConfigService";
 import { cn } from "@/lib/utils";
 
-const StatusHome = () => {
-   const environmentVariables = ConfigHelper.buildEnvVariables();
+const StatusHome = async () => {
+   const configService = new ConfigService();
+   const environmentVariables = configService.buildEnvVariables();
+   const configDbStatus = await AwaitHelper.execute(configService.checkConfigDatabaseConnection());
 
    const getVariableClass = (variable: EnvironmentVariableStatus) => {
       if (variable === "ok") {
@@ -44,7 +47,7 @@ const StatusHome = () => {
                <TableBody>
                   {environmentVariables.envVariables.map((variable) => (
                      <TableRow key={variable.name}>
-                        <TableCell>
+                        <TableCell className="w-5/6">
                            <div className="flex items-center">
                               <div>
                                  {variable.name}
@@ -81,6 +84,35 @@ const StatusHome = () => {
                         </TableCell>
                      </TableRow>
                   ))}
+               </TableBody>
+            </Table>
+            <div className="mb-4 mt-8">
+               <div>
+                  <span className="font-semibold italic underline">Connections</span>&nbsp;&nbsp;:&nbsp;These are the
+                  connections that are available to the OmniHive application including the configuration database.
+               </div>
+            </div>
+            <Table>
+               <TableHeader>
+                  <TableRow>
+                     <TableHead>Connection</TableHead>
+                     <TableHead className="text-center">Status</TableHead>
+                  </TableRow>
+               </TableHeader>
+               <TableBody>
+                  <TableRow>
+                     <TableCell className="w-5/6">
+                        <div>OmniHive Config Database</div>
+                     </TableCell>
+                     <TableCell
+                        className={cn(
+                           "text-center font-semibold",
+                           configDbStatus === true ? "bg-global-success" : "bg-global-error",
+                        )}
+                     >
+                        <div className="text-center text-white">{configDbStatus === true ? "OK" : "ERROR"}</div>
+                     </TableCell>
+                  </TableRow>
                </TableBody>
             </Table>
          </div>
